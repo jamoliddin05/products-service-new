@@ -1,4 +1,4 @@
-CREATE TABLE stores
+CREATE TABLE products_stores
 (
     id         SERIAL PRIMARY KEY,
     user_id    UUID         NOT NULL,
@@ -7,4 +7,4 @@ CREATE TABLE stores
     updated_at TIMESTAMP    NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_stores_user_id ON stores (user_id);
+CREATE INDEX idx_products_stores_user_id ON products_stores (user_id);

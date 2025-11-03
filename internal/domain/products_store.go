@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// Store represents seller's store
-type Store struct {
+// ProductsStore represents seller's store
+type ProductsStore struct {
 	ID        uint      `json:"id" gorm:"primaryKey;autoIncrement"`
 	UserID    uuid.UUID `json:"user_id" gorm:"type:uuid;not null;index"`
 	Name      string    `json:"name" gorm:"not null;"`
