@@ -1,38 +1,31 @@
 package uows
 
 import (
-	"app/internal/repositories"
-	"app/internal/stores"
 	"gorm.io/gorm"
 )
 
-//go:generate mockery --name=UnitOfWork --output=../mocks --structname=UnitOfWorkMock
-type UnitOfWork interface {
-	Store() stores.Store
-	DoCreateProductsStore(fn func(productsStoreRepo repositories.ProductsStoreRepository, eventRepo repositories.EventRepository) error) error
+type UnitOfWork[T any] interface {
+	DoTransaction(fn func(store T) error) error
+	Do(fn func(store T) error) error
 }
 
-type gormUnitOfWork struct {
-	db    *gorm.DB
-	store stores.Store
+type GormUnitOfWork[T any] struct {
+	db           *gorm.DB
+	storeFactory func(tx *gorm.DB) T
 }
 
-func NewUnitOfWork(db *gorm.DB) UnitOfWork {
-	return &gormUnitOfWork{
-		db:    db,
-		store: stores.NewStore(db),
-	}
+func NewGormUnitOfWork[T any](db *gorm.DB, factory func(tx *gorm.DB) T) *GormUnitOfWork[T] {
+	return &GormUnitOfWork[T]{db: db, storeFactory: factory}
 }
 
-// Store plain store
-func (u *gormUnitOfWork) Store() stores.Store {
-	return u.store
-}
-
-// DoCreateProductsStore with tx
-func (u *gormUnitOfWork) DoCreateProductsStore(fn func(repositories.ProductsStoreRepository, repositories.EventRepository) error) error {
+func (u *GormUnitOfWork[T]) DoTransaction(fn func(store T) error) error {
 	return u.db.Transaction(func(tx *gorm.DB) error {
-		txStore := stores.NewStore(tx)
-		return fn(txStore.ProductsStores(), txStore.Outbox())
+		txStore := u.storeFactory(tx)
+		return fn(txStore)
 	})
+}
+
+func (u *GormUnitOfWork[T]) Do(fn func(store T) error) error {
+	store := u.storeFactory(u.db)
+	return fn(store)
 }

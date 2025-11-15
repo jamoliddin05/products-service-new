@@ -5,11 +5,10 @@ import (
 	"time"
 )
 
-// ProductsStore represents seller's store
 type ProductsStore struct {
-	ID        uint      `json:"id" gorm:"primaryKey;autoIncrement"`
+	ID        uint      `json:"-" gorm:"primaryKey;autoIncrement"`
 	UserID    uuid.UUID `json:"user_id" gorm:"type:uuid;not null;index"`
 	Name      string    `json:"name" gorm:"not null;"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
 }

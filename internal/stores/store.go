@@ -5,23 +5,18 @@ import (
 	"gorm.io/gorm"
 )
 
-//go:generate mockery --name=Store --output=../mocks --structname=StoreMock
-type Store interface {
-	ProductsStores() repositories.ProductsStoreRepository
-	Outbox() repositories.EventRepository
-}
-
-type gormStore struct {
+type ProductsStoresOutboxStore struct {
 	db *gorm.DB
 }
 
-func NewStore(db *gorm.DB) Store {
-	return &gormStore{db: db}
+func NewProductsStoresOutboxStore(db *gorm.DB) *ProductsStoresOutboxStore {
+	return &ProductsStoresOutboxStore{db: db}
 }
 
-func (s *gormStore) ProductsStores() repositories.ProductsStoreRepository {
+func (s *ProductsStoresOutboxStore) ProductsStores() repositories.ProductsStoreRepository {
 	return repositories.NewProductsStoreRepository(s.db)
 }
-func (s *gormStore) Outbox() repositories.EventRepository {
+
+func (s *ProductsStoresOutboxStore) Outbox() repositories.EventRepository {
 	return repositories.NewEventRepository(s.db)
 }

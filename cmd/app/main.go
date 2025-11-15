@@ -10,9 +10,11 @@ import (
 func main() {
 	cfg := configs.LoadConfig()
 	dbWrapper := helpers.MustInitDB(cfg)
-	productsHandler := helpers.BuildProductsHandler(dbWrapper)
+	productsStoreHandler := helpers.BuildProductsStoreHandler(dbWrapper)
+
 	r := gin.Default()
-	productsHandler.BindRoutes(r)
+	storeGroup := r.Group("/products/store")
+	productsStoreHandler.BindRoutes(storeGroup)
 
 	app := bootstrap.NewApp(r, ":8080")
 	app.RegisterCloser(dbWrapper)

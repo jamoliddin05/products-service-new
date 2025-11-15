@@ -37,7 +37,6 @@ func (a *App) Run() error {
 	return a.srv.ListenAndServe()
 }
 
-// RunWithGracefulShutdown runs server and gracefully shuts down on SIGINT/SIGTERM
 func (a *App) RunWithGracefulShutdown() {
 	go func() {
 		if err := a.Run(); err != nil && !errors.Is(err, http.ErrServerClosed) {
